@@ -1,5 +1,8 @@
 import telebot
 import time
+import threading
+from flask import Flask
+import os
 
 TOKEN = "8464604971:AAERuqpMdXrBM8LHXnq3D7cS_RFkZknAy2I"
 ADMINS = [5685078094]
@@ -97,11 +100,7 @@ def fallback(message):
         typing(message.chat.id, "Используй /asknereya чтобы разбудить меня! (автоответчик)", 1.5)
 
 
-bot.infinity_polling()
-
-import threading
-from flask import Flask
-
+# --- ВЕБ СЕРВЕР ДЛЯ RENDER ---
 app = Flask(__name__)
 
 @app.route('/')
@@ -109,6 +108,10 @@ def home():
     return "Bot is running!"
 
 def run_web():
-    app.run(host="0.0.0.0", port=10000)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
 
 threading.Thread(target=run_web).start()
+# --- КОНЕЦ ---
+
+bot.infinity_polling()
